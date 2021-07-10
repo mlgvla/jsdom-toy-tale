@@ -1,6 +1,7 @@
 let addToy = false;
 let toyURL ="http://localhost:3000/toys"
-let toyCollection = document.getElementById("toy-collection")
+let toyCollection = document.getElementById('toy-collection')
+let toyForm = document.querySelector('.add-toy-form')
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -11,9 +12,14 @@ document.addEventListener("DOMContentLoaded", () => {
     addToy = !addToy;
     if (addToy) {
       toyFormContainer.style.display = "block";
+      toyForm.addEventListener('submit', e => {
+          e.preventDefault()
+          postToy(e.target)
+      })
     } else {
       toyFormContainer.style.display = "none";
     }
+
   });
   getToys()
 });
@@ -46,4 +52,25 @@ function renderToyCard(toy) {
 
     toyCard.append(h2, img, p, button)
     toyCollection.append(toyCard)
+}
+
+
+function postToy(toyData) {
+    let toyObj = {
+        name: toyData.name.value,
+        image: toyData.image.value,
+        likes: 0
+    }
+
+    let configObj = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify(toyObj)
+    }
+    fetch(toyURL, configObj)
+        .then(resp => resp.json())
+        .then(toyData => renderToyCard(toyData))
 }
