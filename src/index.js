@@ -48,7 +48,9 @@ function renderToyCard(toy) {
 
     let button = document.createElement('button')
     button.setAttribute('class', 'like-btn')
+    button.setAttribute('id', toy.id) // will need for PATCH method
     button.innerText = "like"
+    button.addEventListener("click", e => addLike(e))
 
     toyCard.append(h2, img, p, button)
     toyCollection.append(toyCard)
@@ -73,4 +75,29 @@ function postToy(toyData) {
     fetch(toyURL, configObj)
         .then(resp => resp.json())
         .then(toyData => renderToyCard(toyData))
+}
+
+function addLike(e){
+    e.preventDefault()
+    let p = e.target.previousElementSibling
+  
+    let increasedLikes = parseInt(p.innerText) + 1
+
+    let configObj = {
+        method: 'PATCH',
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        body: JSON.stringify({
+            likes: increasedLikes
+        })
+    }
+
+    fetch(`${toyURL}/${e.target.id}`, configObj)
+        .then(resp => resp.json())
+        .then(result => {
+            console.log(increasedLikes)
+            p.innerText = `${increasedLikes} likes`
+        })
 }
